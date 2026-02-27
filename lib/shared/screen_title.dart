@@ -17,8 +17,10 @@ class ScreenTitle extends StatelessWidget {
             padding: EdgeInsets.only(top: value * 20),
             child: child,
           ),
+          
         );
       },
+      curve: Curves.easeInOut,
       child: Text(
         text,
         style: TextStyle(

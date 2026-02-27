@@ -10,7 +10,8 @@ class Heart extends StatefulWidget {
 class _HeartState extends State<Heart> with TickerProviderStateMixin {
   AnimationController? controller;
   Animation<Color?>? colorAnimation;
-  Animation<double?>? sizeAnimation;
+  Animation<double>? sizeAnimation;
+  Animation<double>? curve;
   bool isFav = false;
 
   @override
@@ -35,6 +36,8 @@ class _HeartState extends State<Heart> with TickerProviderStateMixin {
       end: Colors.redAccent,
     ).animate(controller!);
 
+    curve = CurvedAnimation(parent: controller!, curve: Curves.slowMiddle);
+
     sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
       TweenSequenceItem<double>(
         tween: Tween<double>(begin: 30, end: 50),
@@ -44,7 +47,7 @@ class _HeartState extends State<Heart> with TickerProviderStateMixin {
         tween: Tween<double>(begin: 50, end: 30),
         weight: 50,
       ),
-    ]).animate(controller!);
+    ]).animate(curve!);
   }
 
   @override
