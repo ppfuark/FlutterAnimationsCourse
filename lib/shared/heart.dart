@@ -10,6 +10,7 @@ class Heart extends StatefulWidget {
 class _HeartState extends State<Heart> with TickerProviderStateMixin {
   AnimationController? controller;
   Animation<Color?>? colorAnimation;
+  Animation<double?>? sizeAnimation;
   bool isFav = false;
 
   @override
@@ -33,6 +34,17 @@ class _HeartState extends State<Heart> with TickerProviderStateMixin {
       begin: Colors.grey.shade400,
       end: Colors.redAccent,
     ).animate(controller!);
+
+    sizeAnimation = TweenSequence(<TweenSequenceItem<double>>[
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 30, end: 50),
+        weight: 50,
+      ),
+      TweenSequenceItem<double>(
+        tween: Tween<double>(begin: 50, end: 30),
+        weight: 50,
+      ),
+    ]).animate(controller!);
   }
 
   @override
@@ -47,7 +59,11 @@ class _HeartState extends State<Heart> with TickerProviderStateMixin {
       animation: controller!,
       builder: (context, child) {
         return IconButton(
-          icon: Icon(Icons.favorite, color: colorAnimation!.value, size: 30),
+          icon: Icon(
+            Icons.favorite,
+            color: colorAnimation!.value,
+            size: sizeAnimation!.value,
+          ),
           onPressed: () {
             isFav ? controller!.reverse() : controller!.forward();
           },
