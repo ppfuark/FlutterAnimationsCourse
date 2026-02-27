@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:animations/models/trip.dart';
 import 'package:animations/screens/details.dart';
@@ -10,16 +12,18 @@ class TripList extends StatefulWidget {
 }
 
 class _TripListState extends State<TripList> {
-  final List<Widget> _tripTiles = [];
-  final GlobalKey _listKey = GlobalKey();
+  final List<Widget> tripTiles = [];
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
     super.initState();
-    _addTrips();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      addTrips();
+    });
   }
 
-  void _addTrips() {
+  void addTrips() {
     // get data from db
     List<Trip> trips = [
       Trip(
@@ -33,12 +37,19 @@ class _TripListState extends State<TripList> {
       Trip(title: 'Space Blast', price: '600', nights: '4', img: 'space.png'),
     ];
 
+    Future future = Future(() {});
+
     for (var trip in trips) {
-      _tripTiles.add(_buildTile(trip));
+      future = future.then((_) {
+        return Future.delayed(Duration(milliseconds: 100), () {
+          tripTiles.add(buildTile(trip));
+          listKey.currentState?.insertItem(tripTiles.length - 1);
+        });
+      });
     }
   }
 
-  Widget _buildTile(Trip trip) {
+  Widget buildTile(Trip trip) {
     return ListTile(
       onTap: () {
         Navigator.push(
@@ -75,13 +86,18 @@ class _TripListState extends State<TripList> {
     );
   }
 
+  Tween<Offset> offset = Tween(begin: Offset(1, 0), end: Offset(0, 0));
+
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      key: _listKey,
-      itemCount: _tripTiles.length,
-      itemBuilder: (context, index) {
-        return _tripTiles[index];
+    return AnimatedList(
+      key: listKey,
+      initialItemCount: tripTiles.length,
+      itemBuilder: (context, index, animation) {
+        return SlideTransition(
+          position: animation.drive(offset),
+          child: tripTiles[index],
+        );
       },
     );
   }
